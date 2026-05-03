@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { Preset } from '@/types';
+import { useColors } from '@/hooks/useColors';
 import { Colors } from '@/constants/colors';
 import { Typography } from '@/constants/typography';
 import { Layout } from '@/constants/layout';
@@ -12,52 +13,29 @@ interface PresetChipProps {
 }
 
 export function PresetChip({ preset, onPress, isSelected = false }: PresetChipProps) {
+  const C = useColors();
   return (
     <TouchableOpacity
-      style={[styles.chip, isSelected && styles.chipSelected]}
+      style={[
+        styles.chip,
+        { backgroundColor: C.bgSecondary, borderColor: C.border },
+        isSelected && styles.chipSelected,
+      ]}
       onPress={() => onPress(preset)}
       activeOpacity={0.7}
     >
-      <Text style={styles.name} numberOfLines={1}>{preset.name}</Text>
-      <View style={styles.calBadge}>
-        <Text style={styles.calText}>{Math.round(preset.totalCalories)}</Text>
+      <Text style={[styles.name, { color: C.textPrimary }]} numberOfLines={1}>{preset.name}</Text>
+      <View style={[styles.calBadge, { backgroundColor: C.cardBorder }]}>
+        <Text style={[styles.calText, { color: C.textSecondary }]}>{Math.round(preset.totalCalories)}</Text>
       </View>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.dark.bgSecondary,
-    borderWidth: 1,
-    borderColor: Colors.dark.border,
-    borderRadius: 20,
-    paddingHorizontal: Layout.spacing.md,
-    paddingVertical: Layout.spacing.sm,
-    marginRight: Layout.spacing.sm,
-    gap: Layout.spacing.sm,
-  },
-  chipSelected: {
-    borderColor: Colors.primaryGreen,
-    backgroundColor: `${Colors.primaryGreen}20`,
-  },
-  name: {
-    fontFamily: Typography.sansMedium,
-    fontSize: 13,
-    color: Colors.dark.textPrimary,
-    maxWidth: 120,
-  },
-  calBadge: {
-    backgroundColor: Colors.dark.cardBorder,
-    borderRadius: 10,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  calText: {
-    fontFamily: Typography.mono,
-    fontSize: 11,
-    color: Colors.dark.textSecondary,
-  },
+  chip: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 20, paddingHorizontal: Layout.spacing.md, paddingVertical: Layout.spacing.sm, marginRight: Layout.spacing.sm, gap: Layout.spacing.sm },
+  chipSelected: { borderColor: Colors.primaryGreen, backgroundColor: `${Colors.primaryGreen}20` },
+  name: { fontFamily: Typography.sansMedium, fontSize: 13, maxWidth: 120 },
+  calBadge: { borderRadius: 10, paddingHorizontal: 6, paddingVertical: 2 },
+  calText: { fontFamily: Typography.mono, fontSize: 11 },
 });

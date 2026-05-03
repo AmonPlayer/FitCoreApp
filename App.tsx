@@ -20,7 +20,8 @@ import { useNutritionStore } from '@/store/useNutritionStore';
 import { useTrainingStore } from '@/store/useTrainingStore';
 import { useSleepStore } from '@/store/useSleepStore';
 import { useProgressStore } from '@/store/useProgressStore';
-import { AppNavigator } from '@/navigation/AppNavigator';
+import { useThemeStore } from '@/store/useThemeStore';
+import { RootNavigator } from '@/navigation/RootNavigator';
 import { OnboardingNavigator } from '@/navigation/OnboardingNavigator';
 
 SplashScreen.preventAutoHideAsync();
@@ -30,6 +31,8 @@ export default function App() {
   const profile = useUserStore((s) => s.profile);
   const loadFromStorage = useUserStore((s) => s.loadFromStorage);
   const setProfile = useUserStore((s) => s.setProfile);
+  const loadTheme = useThemeStore((s) => s.loadTheme);
+  const theme = useThemeStore((s) => s.theme);
 
   // Load fonts and initial data
   useEffect(() => {
@@ -42,6 +45,7 @@ export default function App() {
           SpaceMono_400Regular,
         });
         await loadFromStorage();
+        await loadTheme();
       } finally {
         setFontsLoaded(true);
         await SplashScreen.hideAsync();
@@ -87,8 +91,8 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <StatusBar style="light" />
-        {showOnboarding ? <OnboardingNavigator /> : <AppNavigator />}
+        <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+        {showOnboarding ? <OnboardingNavigator /> : <RootNavigator />}
       </NavigationContainer>
     </SafeAreaProvider>
   );

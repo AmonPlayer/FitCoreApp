@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+import { useColors } from '@/hooks/useColors';
 import { Colors } from '@/constants/colors';
 import { Typography } from '@/constants/typography';
 
@@ -17,6 +18,7 @@ export const CalorieRing = React.memo(function CalorieRing({
   size = 200,
   strokeWidth = 14,
 }: CalorieRingProps) {
+  const C = useColors();
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const pct = target > 0 ? Math.min(1, consumed / target) : 0;
@@ -33,7 +35,7 @@ export const CalorieRing = React.memo(function CalorieRing({
           cx={center}
           cy={center}
           r={radius}
-          stroke={Colors.dark.cardBorder}
+          stroke={C.cardBorder}
           strokeWidth={strokeWidth}
           fill="none"
         />
@@ -53,9 +55,9 @@ export const CalorieRing = React.memo(function CalorieRing({
         />
       </Svg>
       <View style={styles.labelContainer}>
-        <Text style={styles.consumed}>{Math.round(consumed)}</Text>
-        <Text style={styles.unit}>kcal</Text>
-        <Text style={styles.target}>/ {target}</Text>
+        <Text style={[styles.consumed, { color: C.textPrimary }]}>{Math.round(consumed)}</Text>
+        <Text style={[styles.unit, { color: C.textSecondary }]}>kcal</Text>
+        <Text style={[styles.target, { color: C.textTertiary }]}>/ {target}</Text>
       </View>
     </View>
   );
@@ -73,19 +75,16 @@ const styles = StyleSheet.create({
   consumed: {
     fontFamily: Typography.mono,
     fontSize: 32,
-    color: Colors.dark.textPrimary,
     lineHeight: 38,
   },
   unit: {
     fontFamily: Typography.sans,
     fontSize: 12,
-    color: Colors.dark.textSecondary,
     marginTop: 2,
   },
   target: {
     fontFamily: Typography.mono,
     fontSize: 12,
-    color: Colors.dark.textTertiary,
     marginTop: 2,
   },
 });

@@ -5,6 +5,7 @@ import { HomeScreen } from '@/screens/HomeScreen';
 import { NutritionScreen } from '@/screens/NutritionScreen';
 import { TrainingScreen } from '@/screens/TrainingScreen';
 import { ProgressScreen } from '@/screens/ProgressScreen';
+import { useColors } from '@/hooks/useColors';
 import { Colors } from '@/constants/colors';
 import { Typography } from '@/constants/typography';
 
@@ -25,19 +26,20 @@ const TAB_ICONS: Record<string, string> = {
 };
 
 export function AppNavigator() {
+  const C = useColors();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: Colors.dark.bgSecondary,
-          borderTopColor: Colors.dark.border,
+          backgroundColor: C.bgSecondary,
+          borderTopColor: C.border,
           borderTopWidth: 1,
           height: 60,
           paddingBottom: 8,
         },
         tabBarActiveTintColor: Colors.primaryGreen,
-        tabBarInactiveTintColor: Colors.dark.textTertiary,
+        tabBarInactiveTintColor: C.textTertiary,
         tabBarLabelStyle: {
           fontFamily: Typography.sans,
           fontSize: 11,

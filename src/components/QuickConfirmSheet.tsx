@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { FoodItem, MealSlot } from '@/types';
 import { searchFoods } from '@/lib/usda';
+import { useColors } from '@/hooks/useColors';
 import { Colors } from '@/constants/colors';
 import { Typography } from '@/constants/typography';
 import { Layout } from '@/constants/layout';
@@ -30,6 +31,7 @@ interface QuickConfirmSheetProps {
 }
 
 export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: QuickConfirmSheetProps) {
+  const C = useColors();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<FoodItem[]>([]);
   const [selected, setSelected] = useState<SelectedItem[]>([]);
@@ -91,15 +93,15 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
       <View style={styles.overlay}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.sheet}
+          style={[styles.sheet, { backgroundColor: C.bgSecondary }]}
         >
-          <View style={styles.handle} />
-          <Text style={styles.title}>Add Food — {mealSlot}</Text>
+          <View style={[styles.handle, { backgroundColor: C.border }]} />
+          <Text style={[styles.title, { color: C.textPrimary }]}>Add Food — {mealSlot}</Text>
 
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { backgroundColor: C.card, borderColor: C.border, color: C.textPrimary }]}
             placeholder="Search food..."
-            placeholderTextColor={Colors.dark.textTertiary}
+            placeholderTextColor={C.textTertiary}
             value={query}
             onChangeText={handleSearch}
             autoCapitalize="none"
@@ -114,12 +116,12 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
               style={styles.resultsList}
               keyboardShouldPersistTaps="handled"
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.resultRow} onPress={() => addItem(item)}>
+                <TouchableOpacity style={[styles.resultRow, { borderBottomColor: C.border }]} onPress={() => addItem(item)}>
                   <View style={styles.resultInfo}>
-                    <Text style={styles.resultName} numberOfLines={1}>{item.name}</Text>
-                    {item.brand && <Text style={styles.resultBrand} numberOfLines={1}>{item.brand}</Text>}
+                    <Text style={[styles.resultName, { color: C.textPrimary }]} numberOfLines={1}>{item.name}</Text>
+                    {item.brand && <Text style={[styles.resultBrand, { color: C.textTertiary }]} numberOfLines={1}>{item.brand}</Text>}
                   </View>
-                  <Text style={styles.resultCal}>{item.calories} kcal</Text>
+                  <Text style={[styles.resultCal, { color: C.textSecondary }]}>{item.calories} kcal</Text>
                   <Text style={styles.addBtn}>+</Text>
                 </TouchableOpacity>
               )}
@@ -128,17 +130,17 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
 
           {selected.length > 0 && (
             <View style={styles.selectedSection}>
-              <Text style={styles.sectionTitle}>Selected</Text>
+              <Text style={[styles.sectionTitle, { color: C.textSecondary }]}>Selected</Text>
               {selected.map((s) => (
                 <View key={s.foodItem.id} style={styles.selectedRow}>
-                  <Text style={styles.selectedName} numberOfLines={1}>{s.foodItem.name}</Text>
+                  <Text style={[styles.selectedName, { color: C.textPrimary }]} numberOfLines={1}>{s.foodItem.name}</Text>
                   <TextInput
-                    style={styles.qtyInput}
+                    style={[styles.qtyInput, { backgroundColor: C.card, borderColor: C.border, color: C.textPrimary }]}
                     value={String(s.quantityG)}
                     onChangeText={(v) => updateQuantity(s.foodItem.id, v)}
                     keyboardType="decimal-pad"
                   />
-                  <Text style={styles.gLabel}>g</Text>
+                  <Text style={[styles.gLabel, { color: C.textTertiary }]}>g</Text>
                   <TouchableOpacity onPress={() => removeSelected(s.foodItem.id)}>
                     <Text style={styles.removeBtn}>✕</Text>
                   </TouchableOpacity>
@@ -148,8 +150,8 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
           )}
 
           <View style={styles.actions}>
-            <TouchableOpacity style={styles.cancelBtn} onPress={handleClose}>
-              <Text style={styles.cancelText}>Cancel</Text>
+            <TouchableOpacity style={[styles.cancelBtn, { borderColor: C.border }]} onPress={handleClose}>
+              <Text style={[styles.cancelText, { color: C.textSecondary }]}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.confirmBtn, selected.length === 0 && styles.confirmDisabled]}
@@ -172,7 +174,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   sheet: {
-    backgroundColor: Colors.dark.bgSecondary,
     borderTopLeftRadius: Layout.borderRadius.xl,
     borderTopRightRadius: Layout.borderRadius.xl,
     padding: Layout.spacing.lg,
@@ -182,27 +183,22 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: Colors.dark.border,
     alignSelf: 'center',
     marginBottom: Layout.spacing.md,
   },
   title: {
     fontFamily: Typography.sansBold,
     fontSize: 16,
-    color: Colors.dark.textPrimary,
     textTransform: 'capitalize',
     marginBottom: Layout.spacing.md,
   },
   searchInput: {
-    backgroundColor: Colors.dark.card,
     borderWidth: 1,
-    borderColor: Colors.dark.border,
     borderRadius: Layout.borderRadius.md,
     paddingHorizontal: Layout.spacing.md,
     paddingVertical: Layout.spacing.sm + 2,
     fontFamily: Typography.sans,
     fontSize: 14,
-    color: Colors.dark.textPrimary,
     marginBottom: Layout.spacing.sm,
   },
   resultsList: {
@@ -222,17 +218,14 @@ const styles = StyleSheet.create({
   resultName: {
     fontFamily: Typography.sansMedium,
     fontSize: 13,
-    color: Colors.dark.textPrimary,
   },
   resultBrand: {
     fontFamily: Typography.sans,
     fontSize: 11,
-    color: Colors.dark.textTertiary,
   },
   resultCal: {
     fontFamily: Typography.mono,
     fontSize: 12,
-    color: Colors.dark.textSecondary,
   },
   addBtn: {
     color: Colors.primaryGreen,
@@ -247,7 +240,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontFamily: Typography.sansMedium,
     fontSize: 12,
-    color: Colors.dark.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginBottom: Layout.spacing.sm,
@@ -262,25 +254,20 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: Typography.sans,
     fontSize: 13,
-    color: Colors.dark.textPrimary,
   },
   qtyInput: {
-    backgroundColor: Colors.dark.card,
     borderWidth: 1,
-    borderColor: Colors.dark.border,
     borderRadius: Layout.borderRadius.sm,
     paddingHorizontal: Layout.spacing.sm,
     paddingVertical: 4,
     fontFamily: Typography.mono,
     fontSize: 13,
-    color: Colors.dark.textPrimary,
     width: 60,
     textAlign: 'center',
   },
   gLabel: {
     fontFamily: Typography.sans,
     fontSize: 12,
-    color: Colors.dark.textTertiary,
   },
   removeBtn: {
     color: Colors.redAccent,
@@ -296,13 +283,11 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: Layout.borderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.dark.border,
     alignItems: 'center',
   },
   cancelText: {
     fontFamily: Typography.sansMedium,
     fontSize: 14,
-    color: Colors.dark.textSecondary,
   },
   confirmBtn: {
     flex: 2,

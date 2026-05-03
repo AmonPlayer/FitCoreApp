@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Polyline, Circle, Line, Text as SvgText } from 'react-native-svg';
 import { WeightLog } from '@/types';
+import { useColors } from '@/hooks/useColors';
 import { Colors } from '@/constants/colors';
 import { Typography } from '@/constants/typography';
 import { Layout } from '@/constants/layout';
@@ -24,6 +25,7 @@ function toPoints(data: { x: number; y: number }[]): string {
 }
 
 export const WeightChart = React.memo(function WeightChart({ logs, targetWeight }: WeightChartProps) {
+  const C = useColors();
   const { points, dots, targetY, xLabels, yLabels, minY, maxY } = useMemo(() => {
     const sorted = [...logs].sort((a, b) => a.date.localeCompare(b.date));
     if (sorted.length === 0) return { points: '', dots: [], targetY: null, xLabels: [], yLabels: [], minY: 0, maxY: 0 };
@@ -69,18 +71,18 @@ export const WeightChart = React.memo(function WeightChart({ logs, targetWeight 
 
   if (logs.length === 0) {
     return (
-      <View style={styles.empty}>
-        <Text style={styles.emptyText}>No weight logs yet</Text>
+      <View style={[styles.empty, { backgroundColor: C.card, borderColor: C.cardBorder }]}>
+        <Text style={[styles.emptyText, { color: C.textTertiary }]}>No weight logs yet</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: C.card, borderColor: C.cardBorder }]}>
       <Svg width={CHART_WIDTH} height={CHART_HEIGHT}>
         {/* Horizontal grid lines */}
         {yLabels.map((yl, i) => (
-          <Line key={`grid-${i}`} x1={PAD_LEFT} y1={yl.y} x2={CHART_WIDTH - PAD_RIGHT} y2={yl.y} stroke={Colors.dark.border} strokeWidth={0.5} />
+          <Line key={`grid-${i}`} x1={PAD_LEFT} y1={yl.y} x2={CHART_WIDTH - PAD_RIGHT} y2={yl.y} stroke={C.border} strokeWidth={0.5} />
         ))}
 
         {/* Target weight dashed line */}
@@ -121,7 +123,7 @@ export const WeightChart = React.memo(function WeightChart({ logs, targetWeight 
             x={xl.x}
             y={CHART_HEIGHT - 4}
             textAnchor="middle"
-            fill={Colors.dark.textTertiary}
+            fill={C.textTertiary}
             fontSize={9}
             fontFamily={Typography.mono}
           >
@@ -136,7 +138,7 @@ export const WeightChart = React.memo(function WeightChart({ logs, targetWeight 
             x={PAD_LEFT - 4}
             y={yl.y + 4}
             textAnchor="end"
-            fill={Colors.dark.textTertiary}
+            fill={C.textTertiary}
             fontSize={9}
             fontFamily={Typography.mono}
           >
@@ -150,17 +152,13 @@ export const WeightChart = React.memo(function WeightChart({ logs, targetWeight 
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.dark.card,
     borderRadius: Layout.borderRadius.lg,
     borderWidth: 1,
-    borderColor: Colors.dark.cardBorder,
     padding: Layout.spacing.md,
   },
   empty: {
-    backgroundColor: Colors.dark.card,
     borderRadius: Layout.borderRadius.lg,
     borderWidth: 1,
-    borderColor: Colors.dark.cardBorder,
     padding: Layout.cardPadding,
     alignItems: 'center',
     justifyContent: 'center',
@@ -169,6 +167,5 @@ const styles = StyleSheet.create({
   emptyText: {
     fontFamily: Typography.sans,
     fontSize: 14,
-    color: Colors.dark.textTertiary,
   },
 });
