@@ -70,8 +70,13 @@ export const useUserStore = create<UserState>((set, get) => ({
   signUp: async (email, password) => {
     set({ isLoading: true, error: null });
     try {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { data, error } = await supabase.auth.signUp({ email, password });
       if (error) throw error;
+      if (data.user) {
+        set((state) => ({
+          onboardingDraft: { ...state.onboardingDraft, userId: data.user!.id, userEmail: email },
+        }));
+      }
     } catch (e) {
       set({ error: (e as Error).message });
       throw e;

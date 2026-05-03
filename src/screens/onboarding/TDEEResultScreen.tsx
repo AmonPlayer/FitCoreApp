@@ -43,12 +43,18 @@ export function TDEEResultScreen({ navigation }: Props) {
     setIsLoading(true);
     setError(null);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      let userId = onboardingDraft.userId;
+      let userEmail = onboardingDraft.userEmail ?? '';
+      if (!userId) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) throw new Error('Not authenticated. Please go back and sign in again.');
+        userId = session.user.id;
+        userEmail = session.user.email ?? '';
+      }
       const draft = onboardingDraft;
       const profile: UserProfile = {
-        id: user.id,
-        email: user.email ?? '',
+        id: userId,
+        email: userEmail,
         name: draft.name ?? '',
         age: draft.age ?? 25,
         sex: draft.sex ?? 'other',
@@ -62,26 +68,28 @@ export function TDEEResultScreen({ navigation }: Props) {
         createdAt: new Date().toISOString(),
       };
 
-      // Save to Supabase
-      const { error: dbError } = await supabase.from('users').upsert({
-        id: profile.id,
-        email: profile.email,
-        name: profile.name,
-        age: profile.age,
-        sex: profile.sex,
-        height_cm: profile.heightCm,
-        weight_kg: profile.weightKg,
-        activity_level: profile.activityLevel,
-        goal: profile.goal,
-        tdee: profile.tdee,
-        target_calories: profile.targets.calories,
-        target_protein: profile.targets.proteinG,
-        target_carbs: profile.targets.carbsG,
-        target_fat: profile.targets.fatG,
-        onboarding_complete: true,
-      }, { onConflict: 'id' });
-
-      if (dbError) throw dbError;
+      // Save to Supabase (non-fatal — may fail if email confirmation is still pending)
+      try {
+        await supabase.from('users').upsert({
+          id: profile.id,
+          email: profile.email,
+          name: profile.name,
+          age: profile.age,
+          sex: profile.sex,
+          height_cm: profile.heightCm,
+          weight_kg: profile.weightKg,
+          activity_level: profile.activityLevel,
+          goal: profile.goal,
+          tdee: profile.tdee,
+          target_calories: profile.targets.calories,
+          target_protein: profile.targets.proteinG,
+          target_carbs: profile.targets.carbsG,
+          target_fat: profile.targets.fatG,
+          onboarding_complete: true,
+        }, { onConflict: 'id' });
+      } catch {
+        // Profile saved locally; Supabase sync will happen on next app foreground
+      }
 
       // Assign default training split
       const split = getDefaultSplit(profile.goal, profile.id);

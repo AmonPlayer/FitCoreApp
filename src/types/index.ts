@@ -31,7 +31,10 @@ export interface UserProfile {
   createdAt: string;
 }
 
-export type OnboardingDraft = Partial<Omit<UserProfile, 'id' | 'createdAt' | 'tdee' | 'targets' | 'onboardingComplete'>>;
+export type OnboardingDraft = Partial<Omit<UserProfile, 'id' | 'createdAt' | 'tdee' | 'targets' | 'onboardingComplete'>> & {
+  userId?: string;
+  userEmail?: string;
+};
 
 // ---- Nutrition ----
 export type MealSlot = 'breakfast' | 'snack' | 'meal';
