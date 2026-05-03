@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -84,10 +85,12 @@ export default function App() {
   const showOnboarding = !profile?.onboardingComplete;
 
   return (
-    <NavigationContainer>
-      <StatusBar style="light" />
-      {showOnboarding ? <OnboardingNavigator /> : <AppNavigator />}
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <StatusBar style="light" />
+        {showOnboarding ? <OnboardingNavigator /> : <AppNavigator />}
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 

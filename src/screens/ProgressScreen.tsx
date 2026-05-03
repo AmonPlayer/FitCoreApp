@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView,
+  View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView,
 } from 'react-native';
 import { format } from 'date-fns';
 import { useUserStore } from '@/store/useUserStore';

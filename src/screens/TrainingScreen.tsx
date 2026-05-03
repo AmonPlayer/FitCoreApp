@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView,
+  View, Text, FlatList, TouchableOpacity, StyleSheet,
   KeyboardAvoidingView, Platform, Alert,
 } from 'react-native';
 import { useUserStore } from '@/store/useUserStore';

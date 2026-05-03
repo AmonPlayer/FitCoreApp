@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView,
+  View, Text, FlatList, TouchableOpacity, StyleSheet,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { format, addDays, subDays } from 'date-fns';
