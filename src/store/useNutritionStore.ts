@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { randomUUID } from 'expo-crypto';
+import { randomUUID } from '@/lib/uuid';
 import { supabase } from '@/lib/supabase';
 import { FoodLog, Preset, PendingSync, MealSlot } from '@/types';
 

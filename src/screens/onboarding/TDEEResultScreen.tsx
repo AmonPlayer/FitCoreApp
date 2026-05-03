@@ -9,7 +9,7 @@ import { allocateMacros } from '@/lib/macroAllocator';
 import { getDefaultSplit } from '@/lib/splitCycler';
 import { supabase } from '@/lib/supabase';
 import { UserProfile } from '@/types';
-import { randomUUID } from 'expo-crypto';
+import { randomUUID } from '@/lib/uuid';
 import { Colors } from '@/constants/colors';
 import { Typography } from '@/constants/typography';
 import { Layout } from '@/constants/layout';
