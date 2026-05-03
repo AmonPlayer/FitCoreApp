@@ -37,9 +37,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
   ],
   extra: {
-    supabaseUrl: process.env.SUPABASE_URL,
-    supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
-    usdaApiKey: process.env.USDA_API_KEY,
+    supabaseUrl: process.env.SUPABASE_URL ?? 'https://hukwmdknwjyklwaspoam.supabase.co',
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1a3dtZGtud2p5a2x3YXNwb2FtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3NjM2NjQsImV4cCI6MjA5MzMzOTY2NH0.v74muhmvCQVHoh5dp39TdLOnCpWW5SrmSBiwHuUWbtQ',
+    usdaApiKey: process.env.USDA_API_KEY ?? 'DEMO_KEY',
   },
   experiments: {
     tsconfigPaths: true,
