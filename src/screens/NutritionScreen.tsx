@@ -68,11 +68,23 @@ export function NutritionScreen() {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         {/* Date Navigator */}
         <View style={styles.dateNav}>
-          <TouchableOpacity onPress={() => setSelectedDate(format(subDays(new Date(selectedDate), 1), 'yyyy-MM-dd'))}>
+          <TouchableOpacity
+            style={styles.navBtn}
+            onPress={() => {
+              const [y, m, d] = selectedDate.split('-').map(Number);
+              setSelectedDate(format(subDays(new Date(y, m - 1, d), 1), 'yyyy-MM-dd'));
+            }}
+          >
             <Text style={styles.navArrow}>‹</Text>
           </TouchableOpacity>
-          <Text style={styles.dateText}>{format(new Date(selectedDate), 'EEEE, MMM d')}</Text>
-          <TouchableOpacity onPress={() => setSelectedDate(format(addDays(new Date(selectedDate), 1), 'yyyy-MM-dd'))}>
+          <Text style={styles.dateText}>{format(new Date(selectedDate + 'T12:00:00'), 'EEEE, MMM d')}</Text>
+          <TouchableOpacity
+            style={styles.navBtn}
+            onPress={() => {
+              const [y, m, d] = selectedDate.split('-').map(Number);
+              setSelectedDate(format(addDays(new Date(y, m - 1, d), 1), 'yyyy-MM-dd'));
+            }}
+          >
             <Text style={styles.navArrow}>›</Text>
           </TouchableOpacity>
         </View>
@@ -181,7 +193,8 @@ const logStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.dark.bgPrimary },
-  dateNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Layout.spacing.xl, paddingVertical: Layout.spacing.md },
+  dateNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Layout.spacing.md, paddingVertical: Layout.spacing.sm },
+  navBtn: { paddingHorizontal: Layout.spacing.lg, paddingVertical: Layout.spacing.md },
   navArrow: { fontSize: 28, color: Colors.dark.textSecondary, lineHeight: 32 },
   dateText: { fontFamily: Typography.sansMedium, fontSize: 15, color: Colors.dark.textPrimary },
   summaryBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Layout.spacing.lg, paddingBottom: Layout.spacing.sm },
