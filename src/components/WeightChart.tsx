@@ -79,8 +79,8 @@ export const WeightChart = React.memo(function WeightChart({ logs, targetWeight 
     <View style={styles.container}>
       <Svg width={CHART_WIDTH} height={CHART_HEIGHT}>
         {/* Horizontal grid lines */}
-        {yLabels.map((yl) => (
-          <Line key={yl.label} x1={PAD_LEFT} y1={yl.y} x2={CHART_WIDTH - PAD_RIGHT} y2={yl.y} stroke={Colors.dark.border} strokeWidth={0.5} />
+        {yLabels.map((yl, i) => (
+          <Line key={`grid-${i}`} x1={PAD_LEFT} y1={yl.y} x2={CHART_WIDTH - PAD_RIGHT} y2={yl.y} stroke={Colors.dark.border} strokeWidth={0.5} />
         ))}
 
         {/* Target weight dashed line */}
@@ -115,9 +115,9 @@ export const WeightChart = React.memo(function WeightChart({ logs, targetWeight 
         ))}
 
         {/* X-axis labels */}
-        {xLabels.map((xl) => (
+        {xLabels.map((xl, i) => (
           <SvgText
-            key={xl.label}
+            key={`xlabel-${i}`}
             x={xl.x}
             y={CHART_HEIGHT - 4}
             textAnchor="middle"
@@ -130,9 +130,9 @@ export const WeightChart = React.memo(function WeightChart({ logs, targetWeight 
         ))}
 
         {/* Y-axis labels */}
-        {yLabels.map((yl) => (
+        {yLabels.map((yl, i) => (
           <SvgText
-            key={yl.label}
+            key={`ylabel-${i}`}
             x={PAD_LEFT - 4}
             y={yl.y + 4}
             textAnchor="end"
