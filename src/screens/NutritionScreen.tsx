@@ -22,7 +22,8 @@ const TABS: { label: string; value: MealSlot }[] = [
 ];
 
 export function NutritionScreen() {
-  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const [selectedDate, setSelectedDate] = useState(today);
   const [activeSlot, setActiveSlot] = useState<MealSlot>('breakfast');
   const [sheetVisible, setSheetVisible] = useState(false);
 
@@ -79,7 +80,8 @@ export function NutritionScreen() {
           </TouchableOpacity>
           <Text style={styles.dateText}>{format(new Date(selectedDate + 'T12:00:00'), 'EEEE, MMM d')}</Text>
           <TouchableOpacity
-            style={styles.navBtn}
+            style={[styles.navBtn, selectedDate >= today && styles.navBtnDisabled]}
+            disabled={selectedDate >= today}
             onPress={() => {
               const [y, m, d] = selectedDate.split('-').map(Number);
               setSelectedDate(format(addDays(new Date(y, m - 1, d), 1), 'yyyy-MM-dd'));
@@ -195,6 +197,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.dark.bgPrimary },
   dateNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Layout.spacing.md, paddingVertical: Layout.spacing.sm },
   navBtn: { paddingHorizontal: Layout.spacing.lg, paddingVertical: Layout.spacing.md },
+  navBtnDisabled: { opacity: 0.25 },
   navArrow: { fontSize: 28, color: Colors.dark.textSecondary, lineHeight: 32 },
   dateText: { fontFamily: Typography.sansMedium, fontSize: 15, color: Colors.dark.textPrimary },
   summaryBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Layout.spacing.lg, paddingBottom: Layout.spacing.sm },
