@@ -197,15 +197,27 @@ export function NutritionScreen() {
 
 function LogRow({ log, onDelete }: { log: FoodLog; onDelete: () => void }) {
   const C = useColors();
-  const ratio = log.quantityG / log.foodItem.servingSizeG;
+  const ratio = log.quantityG / 100;
   const cals = Math.round(log.foodItem.calories * ratio);
+  const protein = Math.round(log.foodItem.proteinG * ratio * 10) / 10;
+  const carbs = Math.round(log.foodItem.carbsG * ratio * 10) / 10;
+  const fat = Math.round(log.foodItem.fatG * ratio * 10) / 10;
   return (
     <View style={[logStyles.row, { backgroundColor: C.card, borderColor: C.cardBorder }]}>
       <View style={logStyles.info}>
-        <Text style={[logStyles.name, { color: C.textPrimary }]} numberOfLines={1}>{log.foodItem.name}</Text>
+        <View style={logStyles.topRow}>
+          <Text style={[logStyles.name, { color: C.textPrimary }]} numberOfLines={1}>{log.foodItem.name}</Text>
+          <Text style={logStyles.cals}>{cals} kcal</Text>
+        </View>
         <Text style={[logStyles.qty, { color: C.textTertiary }]}>{log.quantityG}g · {log.foodItem.brand ?? log.foodItem.source.toUpperCase()}</Text>
+        <View style={logStyles.macroRow}>
+          <Text style={[logStyles.macroVal, { color: Colors.primaryGreen }]}>{protein}g P</Text>
+          <Text style={[logStyles.macroDot, { color: C.textTertiary }]}>·</Text>
+          <Text style={[logStyles.macroVal, { color: Colors.blueAccent }]}>{carbs}g C</Text>
+          <Text style={[logStyles.macroDot, { color: C.textTertiary }]}>·</Text>
+          <Text style={[logStyles.macroVal, { color: Colors.orangeAccent }]}>{fat}g F</Text>
+        </View>
       </View>
-      <Text style={logStyles.cals}>{cals} kcal</Text>
       <TouchableOpacity onPress={onDelete} style={logStyles.deleteBtn}>
         <Text style={[logStyles.deleteIcon, { color: C.textTertiary }]}>✕</Text>
       </TouchableOpacity>
@@ -216,9 +228,13 @@ function LogRow({ log, onDelete }: { log: FoodLog; onDelete: () => void }) {
 const logStyles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', borderRadius: Layout.borderRadius.md, padding: Layout.spacing.md, marginBottom: Layout.spacing.sm, borderWidth: 1, gap: Layout.spacing.sm },
   info: { flex: 1 },
-  name: { fontFamily: Typography.sansMedium, fontSize: 14 },
-  qty: { fontFamily: Typography.sans, fontSize: 12, marginTop: 2 },
+  topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
+  name: { fontFamily: Typography.sansMedium, fontSize: 14, flex: 1, marginRight: 8 },
   cals: { fontFamily: Typography.mono, fontSize: 13, color: Colors.primaryGreen },
+  qty: { fontFamily: Typography.sans, fontSize: 12, marginTop: 2 },
+  macroRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 },
+  macroVal: { fontFamily: Typography.mono, fontSize: 11 },
+  macroDot: { fontFamily: Typography.mono, fontSize: 11 },
   deleteBtn: { padding: 4 },
   deleteIcon: { fontSize: 13 },
 });
