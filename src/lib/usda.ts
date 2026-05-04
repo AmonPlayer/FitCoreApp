@@ -47,11 +47,11 @@ export async function searchFoods(query: string): Promise<FoodItem[]> {
     query,
     api_key: apiKey,
     pageSize: '25',
-    dataType: 'Foundation,SR Legacy,Survey (FNDDS),Branded',
     sortBy: 'score',
     sortOrder: 'desc',
   });
-  const res = await fetch(`${BASE_URL}/foods/search?${params}`);
+  const url = `${BASE_URL}/foods/search?${params}&dataType=Foundation,SR%20Legacy,Survey%20(FNDDS),Branded`;
+  const res = await fetch(url);
   if (!res.ok) throw new Error(`USDA search failed: ${res.status}`);
   const data = (await res.json()) as { foods?: Record<string, unknown>[] };
   const items = (data.foods ?? []).map(mapToFoodItem);
