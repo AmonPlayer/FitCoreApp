@@ -12,8 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { FoodItem, MealSlot } from '@/types';
-import { searchFoods } from '@/lib/usda';
-import { searchByBarcode } from '@/lib/openFoodFacts';
+import { searchByName, searchByBarcode } from '@/lib/openFoodFacts';
 import { useColors } from '@/hooks/useColors';
 import { BarcodeScanner } from '@/components/BarcodeScanner';
 import { Colors } from '@/constants/colors';
@@ -41,18 +40,22 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
   const [searchTimer, setSearchTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const handleSearch = useCallback((text: string) => {
     setQuery(text);
     if (searchTimer) clearTimeout(searchTimer);
-    if (text.trim().length < 2) { setResults([]); return; }
+    if (text.trim().length < 2) { setResults([]); setSearchError(null); return; }
     const timer = setTimeout(async () => {
       setIsSearching(true);
+      setSearchError(null);
       try {
-        const items = await searchFoods(text.trim());
+        const items = await searchByName(text.trim());
         setResults(items);
+        if (items.length === 0) setSearchError('No results found. Try a different search term.');
       } catch {
         setResults([]);
+        setSearchError('Search failed. Check your connection and try again.');
       } finally {
         setIsSearching(false);
       }
@@ -90,6 +93,7 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
     setResults([]);
     setSelected([]);
     setScanError(null);
+    setSearchError(null);
     onClose();
   };
 
@@ -141,6 +145,7 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
           </View>
 
           {scanError && <Text style={styles.scanError}>{scanError}</Text>}
+          {searchError && <Text style={styles.scanError}>{searchError}</Text>}
           {isSearching && <ActivityIndicator color={Colors.primaryGreen} style={{ marginVertical: 8 }} />}
 
           <BarcodeScanner

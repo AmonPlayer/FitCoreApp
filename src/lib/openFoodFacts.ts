@@ -43,11 +43,11 @@ export async function searchByBarcode(barcode: string): Promise<FoodItem | null>
 }
 
 export async function searchByName(query: string): Promise<FoodItem[]> {
-  const url = `${BASE_URL}/search?search_terms=${encodeURIComponent(query)}&sort_by=unique_scans_n&json=1&page_size=20`;
+  const url = `${BASE_URL}/search?search_terms=${encodeURIComponent(query)}&sort_by=unique_scans_n&json=1&page_size=40`;
   const res = await fetch(url);
   if (!res.ok) return [];
   const data = (await res.json()) as { products?: OFFProduct[] };
   return (data.products ?? [])
     .map(mapProduct)
-    .filter((item) => item.name && item.name !== 'Unknown' && item.calories > 0);
+    .filter((item) => item.name && item.name !== 'Unknown');
 }
