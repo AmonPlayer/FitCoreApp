@@ -12,7 +12,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { FoodItem, MealSlot } from '@/types';
-import { searchByName, searchByBarcode } from '@/lib/openFoodFacts';
+import { searchFoods } from '@/lib/usda';
+import { searchByBarcode } from '@/lib/openFoodFacts';
 import { useColors } from '@/hooks/useColors';
 import { BarcodeScanner } from '@/components/BarcodeScanner';
 import { Colors } from '@/constants/colors';
@@ -48,7 +49,7 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
-        const items = await searchByName(text.trim());
+        const items = await searchFoods(text.trim());
         setResults(items);
       } catch {
         setResults([]);
@@ -62,7 +63,7 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
   const addItem = (item: FoodItem) => {
     setSelected((prev) => {
       if (prev.find((s) => s.foodItem.id === item.id)) return prev;
-      return [...prev, { foodItem: item, quantityG: item.servingSizeG }];
+      return [...prev, { foodItem: item, quantityG: Math.round(item.servingSizeG) }];
     });
   };
 
@@ -169,11 +170,11 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
                         ) : null}
                       </View>
                       <View style={styles.macroRow}>
-                        <Text style={[styles.macroChip, { color: Colors.primaryGreen }]}>{item.proteinG}g P</Text>
+                        <Text style={[styles.macroChip, { color: Colors.primaryGreen }]}>{Math.round(item.proteinG)}g P</Text>
                         <Text style={[styles.macroDot, { color: C.textTertiary }]}>·</Text>
-                        <Text style={[styles.macroChip, { color: Colors.blueAccent }]}>{item.carbsG}g C</Text>
+                        <Text style={[styles.macroChip, { color: Colors.blueAccent }]}>{Math.round(item.carbsG)}g C</Text>
                         <Text style={[styles.macroDot, { color: C.textTertiary }]}>·</Text>
-                        <Text style={[styles.macroChip, { color: Colors.orangeAccent }]}>{item.fatG}g F</Text>
+                        <Text style={[styles.macroChip, { color: Colors.orangeAccent }]}>{Math.round(item.fatG)}g F</Text>
                         <Text style={[styles.resultCal, { color: C.textTertiary }]}>{item.calories} kcal</Text>
                       </View>
                     </View>

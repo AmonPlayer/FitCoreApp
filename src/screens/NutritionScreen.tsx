@@ -79,7 +79,7 @@ export function NutritionScreen() {
         date: selectedDate,
         mealSlot: activeSlot,
         foodItem: item,
-        quantityG: item.servingSizeG,
+        quantityG: Math.round(item.servingSizeG),
         loggedAt: new Date().toISOString(),
       });
     }
@@ -199,9 +199,9 @@ function LogRow({ log, onDelete }: { log: FoodLog; onDelete: () => void }) {
   const C = useColors();
   const ratio = log.quantityG / 100;
   const cals = Math.round(log.foodItem.calories * ratio);
-  const protein = Math.round(log.foodItem.proteinG * ratio * 10) / 10;
-  const carbs = Math.round(log.foodItem.carbsG * ratio * 10) / 10;
-  const fat = Math.round(log.foodItem.fatG * ratio * 10) / 10;
+  const protein = Math.round(log.foodItem.proteinG * ratio);
+  const carbs = Math.round(log.foodItem.carbsG * ratio);
+  const fat = Math.round(log.foodItem.fatG * ratio);
   return (
     <View style={[logStyles.row, { backgroundColor: C.card, borderColor: C.cardBorder }]}>
       <View style={logStyles.info}>
