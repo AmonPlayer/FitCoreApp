@@ -10,8 +10,10 @@ import { useNutritionStore } from '@/store/useNutritionStore';
 import { useDailyMacros } from '@/hooks/useDailyMacros';
 import { useColors } from '@/hooks/useColors';
 import { QuickConfirmSheet } from '@/components/QuickConfirmSheet';
+import { BarcodeScanner } from '@/components/BarcodeScanner';
 import { PresetChip } from '@/components/PresetChip';
 import { MealSlot, FoodItem, FoodLog } from '@/types';
+import { searchByBarcode } from '@/lib/openFoodFacts';
 import { Colors } from '@/constants/colors';
 import { Typography } from '@/constants/typography';
 import { Layout } from '@/constants/layout';
@@ -28,6 +30,7 @@ export function NutritionScreen() {
   const [selectedDate, setSelectedDate] = useState(today);
   const [activeSlot, setActiveSlot] = useState<MealSlot>('breakfast');
   const [sheetVisible, setSheetVisible] = useState(false);
+  const [scannerVisible, setScannerVisible] = useState(false);
 
   const profile = useUserStore((s) => s.profile);
   const logs = useNutritionStore((s) => s.logs);
@@ -65,6 +68,22 @@ export function NutritionScreen() {
   };
 
   const caloriesPct = targets.calories > 0 ? Math.min(1, consumed.calories / targets.calories) : 0;
+
+  const handleBarcodeScan = async (barcode: string) => {
+    setScannerVisible(false);
+    if (!profile) return;
+    const item = await searchByBarcode(barcode);
+    if (item) {
+      await addLog({
+        userId: profile.id,
+        date: selectedDate,
+        mealSlot: activeSlot,
+        foodItem: item,
+        quantityG: item.servingSizeG,
+        loggedAt: new Date().toISOString(),
+      });
+    }
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: C.bgPrimary }]}>
@@ -152,11 +171,19 @@ export function NutritionScreen() {
           renderItem={({ item }) => <LogRow log={item} onDelete={() => removeLog(item.id)} />}
         />
 
-        {/* FAB */}
+        {/* FABs */}
+        <TouchableOpacity style={styles.fabBarcode} onPress={() => setScannerVisible(true)}>
+          <Text style={styles.fabBarcodeIcon}>⊡</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.fab} onPress={() => setSheetVisible(true)}>
           <Text style={styles.fabIcon}>+</Text>
         </TouchableOpacity>
 
+        <BarcodeScanner
+          visible={scannerVisible}
+          onScanned={handleBarcodeScan}
+          onClose={() => setScannerVisible(false)}
+        />
         <QuickConfirmSheet
           visible={sheetVisible}
           mealSlot={activeSlot}
@@ -219,6 +246,8 @@ const styles = StyleSheet.create({
   emptyState: { alignItems: 'center', paddingTop: 48 },
   emptyText: { fontFamily: Typography.sansMedium, fontSize: 15, marginBottom: 4 },
   emptySubText: { fontFamily: Typography.sans, fontSize: 13 },
+  fabBarcode: { position: 'absolute', bottom: 92, right: 28, width: 46, height: 46, borderRadius: 23, backgroundColor: Colors.primaryGreen, alignItems: 'center', justifyContent: 'center', elevation: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4 },
+  fabBarcodeIcon: { fontSize: 20, color: '#FFFFFF' },
   fab: { position: 'absolute', bottom: 24, right: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: Colors.primaryGreen, alignItems: 'center', justifyContent: 'center', elevation: 6, shadowColor: Colors.primaryGreen, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 8 },
   fabIcon: { fontSize: 28, color: '#FFFFFF', lineHeight: 32 },
 });
