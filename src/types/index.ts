@@ -50,6 +50,7 @@ export interface FoodItem {
   fatG: number;
   source: 'usda' | 'off' | 'custom';
   barcode?: string;
+  dataType?: string;
 }
 
 export interface FoodLog {

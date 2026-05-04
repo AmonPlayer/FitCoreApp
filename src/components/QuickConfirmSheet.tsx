@@ -115,16 +115,35 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
               keyExtractor={(item) => item.id}
               style={styles.resultsList}
               keyboardShouldPersistTaps="handled"
-              renderItem={({ item }) => (
-                <TouchableOpacity style={[styles.resultRow, { borderBottomColor: C.border }]} onPress={() => addItem(item)}>
-                  <View style={styles.resultInfo}>
-                    <Text style={[styles.resultName, { color: C.textPrimary }]} numberOfLines={1}>{item.name}</Text>
-                    {item.brand && <Text style={[styles.resultBrand, { color: C.textTertiary }]} numberOfLines={1}>{item.brand}</Text>}
-                  </View>
-                  <Text style={[styles.resultCal, { color: C.textSecondary }]}>{item.calories} kcal</Text>
-                  <Text style={styles.addBtn}>+</Text>
-                </TouchableOpacity>
-              )}
+              renderItem={({ item }) => {
+                const isGeneric = item.dataType === 'Foundation' || item.dataType === 'SR Legacy';
+                const badgeLabel = isGeneric ? 'Generic' : (item.brand ?? item.dataType ?? '');
+                return (
+                  <TouchableOpacity style={[styles.resultRow, { borderBottomColor: C.border }]} onPress={() => addItem(item)}>
+                    <View style={styles.resultInfo}>
+                      <View style={styles.resultTopRow}>
+                        <Text style={[styles.resultName, { color: C.textPrimary }]} numberOfLines={1}>{item.name}</Text>
+                        {badgeLabel ? (
+                          <View style={[styles.badge, isGeneric ? styles.badgeGeneric : { backgroundColor: C.bgPrimary }]}>
+                            <Text style={[styles.badgeText, isGeneric ? styles.badgeTextGeneric : { color: C.textTertiary }]} numberOfLines={1}>{badgeLabel}</Text>
+                          </View>
+                        ) : null}
+                      </View>
+                      <View style={styles.macroRow}>
+                        <Text style={[styles.macroChip, { color: Colors.primaryGreen }]}>{item.proteinG}g P</Text>
+                        <Text style={[styles.macroDot, { color: C.textTertiary }]}>·</Text>
+                        <Text style={[styles.macroChip, { color: Colors.blueAccent }]}>{item.carbsG}g C</Text>
+                        <Text style={[styles.macroDot, { color: C.textTertiary }]}>·</Text>
+                        <Text style={[styles.macroChip, { color: Colors.orangeAccent }]}>{item.fatG}g F</Text>
+                        <Text style={[styles.resultCal, { color: C.textTertiary }]}>{item.calories} kcal</Text>
+                      </View>
+                    </View>
+                    <TouchableOpacity style={styles.addCircle} onPress={() => addItem(item)}>
+                      <Text style={styles.addBtn}>+</Text>
+                    </TouchableOpacity>
+                  </TouchableOpacity>
+                );
+              }}
             />
           )}
 
@@ -202,37 +221,77 @@ const styles = StyleSheet.create({
     marginBottom: Layout.spacing.sm,
   },
   resultsList: {
-    maxHeight: 200,
+    maxHeight: 280,
   },
   resultRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: Layout.spacing.sm,
+    paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.dark.border,
     gap: Layout.spacing.sm,
   },
   resultInfo: {
     flex: 1,
+    gap: 4,
+  },
+  resultTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flexWrap: 'wrap',
   },
   resultName: {
     fontFamily: Typography.sansMedium,
-    fontSize: 13,
+    fontSize: 14,
+    flex: 1,
   },
-  resultBrand: {
+  badge: {
+    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  badgeGeneric: {
+    backgroundColor: `${Colors.primaryGreen}20`,
+  },
+  badgeText: {
     fontFamily: Typography.sans,
+    fontSize: 10,
+  },
+  badgeTextGeneric: {
+    color: Colors.primaryGreen,
+  },
+  macroRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  macroChip: {
+    fontFamily: Typography.mono,
+    fontSize: 11,
+  },
+  macroDot: {
+    fontFamily: Typography.mono,
     fontSize: 11,
   },
   resultCal: {
     fontFamily: Typography.mono,
-    fontSize: 12,
+    fontSize: 11,
+    marginLeft: 'auto',
+  },
+  addCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 1.5,
+    borderColor: Colors.primaryGreen,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   addBtn: {
     color: Colors.primaryGreen,
     fontSize: 20,
     fontFamily: Typography.sansBold,
-    width: 24,
-    textAlign: 'center',
+    lineHeight: 22,
   },
   selectedSection: {
     marginTop: Layout.spacing.md,
