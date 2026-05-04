@@ -12,8 +12,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { FoodItem, MealSlot } from '@/types';
-import { searchFoods } from '@/lib/usda';
+import { searchByName, searchByBarcode } from '@/lib/openFoodFacts';
 import { useColors } from '@/hooks/useColors';
+import { BarcodeScanner } from '@/components/BarcodeScanner';
 import { Colors } from '@/constants/colors';
 import { Typography } from '@/constants/typography';
 import { Layout } from '@/constants/layout';
@@ -37,6 +38,8 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
   const [selected, setSelected] = useState<SelectedItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchTimer, setSearchTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [scanError, setScanError] = useState<string | null>(null);
 
   const handleSearch = useCallback((text: string) => {
     setQuery(text);
@@ -45,7 +48,7 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
-        const items = await searchFoods(text.trim());
+        const items = await searchByName(text.trim());
         setResults(items);
       } catch {
         setResults([]);
@@ -85,7 +88,28 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
     setQuery('');
     setResults([]);
     setSelected([]);
+    setScanError(null);
     onClose();
+  };
+
+  const handleBarcodeScan = async (barcode: string) => {
+    setScannerOpen(false);
+    setIsSearching(true);
+    setScanError(null);
+    try {
+      const item = await searchByBarcode(barcode);
+      if (item) {
+        setSelected((prev) => prev.find((s) => s.foodItem.id === item.id) ? prev : [...prev, { foodItem: item, quantityG: item.servingSizeG }]);
+      } else {
+        setScanError('Product not found. Try searching by name.');
+        setTimeout(() => setScanError(null), 3000);
+      }
+    } catch {
+      setScanError('Scan failed. Try again.');
+      setTimeout(() => setScanError(null), 3000);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   return (
@@ -98,16 +122,31 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
           <View style={[styles.handle, { backgroundColor: C.border }]} />
           <Text style={[styles.title, { color: C.textPrimary }]}>Add Food — {mealSlot}</Text>
 
-          <TextInput
-            style={[styles.searchInput, { backgroundColor: C.card, borderColor: C.border, color: C.textPrimary }]}
-            placeholder="Search food..."
-            placeholderTextColor={C.textTertiary}
-            value={query}
-            onChangeText={handleSearch}
-            autoCapitalize="none"
-          />
+          <View style={styles.searchRow}>
+            <TextInput
+              style={[styles.searchInput, { backgroundColor: C.card, borderColor: C.border, color: C.textPrimary }]}
+              placeholder="Search food..."
+              placeholderTextColor={C.textTertiary}
+              value={query}
+              onChangeText={handleSearch}
+              autoCapitalize="none"
+            />
+            <TouchableOpacity
+              style={[styles.scanBtn, { backgroundColor: C.card, borderColor: C.border }]}
+              onPress={() => setScannerOpen(true)}
+            >
+              <Text style={styles.scanIcon}>⊡</Text>
+            </TouchableOpacity>
+          </View>
 
+          {scanError && <Text style={styles.scanError}>{scanError}</Text>}
           {isSearching && <ActivityIndicator color={Colors.primaryGreen} style={{ marginVertical: 8 }} />}
+
+          <BarcodeScanner
+            visible={scannerOpen}
+            onScanned={handleBarcodeScan}
+            onClose={() => setScannerOpen(false)}
+          />
 
           {results.length > 0 && (
             <FlatList
@@ -211,13 +250,35 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     marginBottom: Layout.spacing.md,
   },
+  searchRow: {
+    flexDirection: 'row',
+    gap: Layout.spacing.sm,
+    marginBottom: Layout.spacing.sm,
+  },
   searchInput: {
+    flex: 1,
     borderWidth: 1,
     borderRadius: Layout.borderRadius.md,
     paddingHorizontal: Layout.spacing.md,
     paddingVertical: Layout.spacing.sm + 2,
     fontFamily: Typography.sans,
     fontSize: 14,
+  },
+  scanBtn: {
+    width: 46,
+    borderWidth: 1,
+    borderRadius: Layout.borderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scanIcon: {
+    fontSize: 22,
+    color: Colors.primaryGreen,
+  },
+  scanError: {
+    fontFamily: Typography.sans,
+    fontSize: 12,
+    color: Colors.redAccent,
     marginBottom: Layout.spacing.sm,
   },
   resultsList: {
