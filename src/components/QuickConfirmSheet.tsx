@@ -12,7 +12,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { FoodItem, MealSlot } from '@/types';
-import { searchByName, searchByBarcode } from '@/lib/openFoodFacts';
+import { searchFoods } from '@/lib/usda';
+import { searchByBarcode } from '@/lib/openFoodFacts';
 import { useColors } from '@/hooks/useColors';
 import { BarcodeScanner } from '@/components/BarcodeScanner';
 import { Colors } from '@/constants/colors';
@@ -50,7 +51,7 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
       setIsSearching(true);
       setSearchError(null);
       try {
-        const items = await searchByName(text.trim());
+        const items = await searchFoods(text.trim());
         setResults(items);
         if (items.length === 0) setSearchError('No results found. Try a different search term.');
       } catch {
