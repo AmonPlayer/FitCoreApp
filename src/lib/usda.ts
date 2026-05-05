@@ -1,4 +1,3 @@
-import Constants from 'expo-constants';
 import { FoodItem } from '@/types';
 
 const BASE_URL = 'https://api.nal.usda.gov/fdc/v1';
@@ -11,7 +10,7 @@ const DATA_TYPE_PRIORITY: Record<string, number> = {
 };
 
 function getApiKey(): string {
-  return process.env.EXPO_PUBLIC_USDA_API_KEY ?? Constants.expoConfig?.extra?.usdaApiKey ?? 'DEMO_KEY';
+  return 'zRX7Z4k8pAIaDWZ5AEBk5bCQszlegq8wE2BDJrdv';
 }
 
 function getNutrient(nutrients: Array<{ nutrientId: number; value: number }>, id: number): number {
