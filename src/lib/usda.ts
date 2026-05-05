@@ -51,7 +51,9 @@ export async function searchFoods(query: string): Promise<FoodItem[]> {
     sortOrder: 'desc',
   });
   const url = `${BASE_URL}/foods/search?${params}&dataType=Foundation,SR%20Legacy,Survey%20(FNDDS),Branded`;
+  console.log('[USDA] key:', apiKey.slice(0, 6), 'url:', url.slice(0, 80));
   const res = await fetch(url);
+  console.log('[USDA] status:', res.status);
   if (!res.ok) throw new Error(`USDA search failed: ${res.status}`);
   const data = (await res.json()) as { foods?: Record<string, unknown>[] };
   const items = (data.foods ?? []).map(mapToFoodItem);

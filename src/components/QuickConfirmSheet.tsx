@@ -54,9 +54,9 @@ export function QuickConfirmSheet({ visible, mealSlot, onClose, onConfirm }: Qui
         const items = await searchFoods(text.trim());
         setResults(items);
         if (items.length === 0) setSearchError('No results found. Try a different search term.');
-      } catch {
+      } catch (e) {
         setResults([]);
-        setSearchError('Search failed. Check your connection and try again.');
+        setSearchError(`Search failed: ${e instanceof Error ? e.message : String(e)}`);
       } finally {
         setIsSearching(false);
       }
