@@ -11,7 +11,7 @@ const DATA_TYPE_PRIORITY: Record<string, number> = {
 };
 
 function getApiKey(): string {
-  return Constants.expoConfig?.extra?.usdaApiKey ?? 'DEMO_KEY';
+  return process.env.EXPO_PUBLIC_USDA_API_KEY ?? Constants.expoConfig?.extra?.usdaApiKey ?? 'DEMO_KEY';
 }
 
 function getNutrient(nutrients: Array<{ nutrientId: number; value: number }>, id: number): number {
